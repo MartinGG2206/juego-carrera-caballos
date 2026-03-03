@@ -1,10 +1,10 @@
 package com.example.horserace.domain;
 
 public enum Suit {
-    CLUBS("Treboles", "C"),
-    DIAMONDS("Diamantes", "D"),
-    HEARTS("Corazones", "H"),
-    SPADES("Picas", "S");
+    BASTOS("Bastos", "B"),
+    OROS("Oros", "O"),
+    COPAS("Copas", "C"),
+    ESPADAS("Espadas", "E");
 
     private final String displayName;
     private final String symbol;

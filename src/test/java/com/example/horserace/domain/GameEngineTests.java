@@ -15,24 +15,24 @@ class GameEngineTests {
         GameState gameState = gameEngine.createNewGame();
 
         assertEquals(7, gameState.getTrackCards().size());
-        assertEquals(41, gameState.getRemainingDeckSize());
+        assertEquals(29, gameState.getRemainingDeckSize());
     }
 
     @Test
     void shouldRegisterBetAndDiscountBalance() {
         GameState gameState = gameEngine.createNewGame();
 
-        gameEngine.placeBet(gameState, Suit.HEARTS, 10);
+        gameEngine.placeBet(gameState, Suit.COPAS, 10);
 
         assertTrue(gameState.isBetPlaced());
         assertEquals(90, gameState.getPlayerBalance());
-        assertEquals(Suit.HEARTS, gameState.getSelectedHorse());
+        assertEquals(Suit.COPAS, gameState.getSelectedHorse());
     }
 
     @Test
     void shouldFinishRaceEventually() {
         GameState gameState = gameEngine.createNewGame();
-        gameEngine.placeBet(gameState, Suit.CLUBS, 10);
+        gameEngine.placeBet(gameState, Suit.BASTOS, 10);
 
         while (!gameState.isFinished()) {
             gameEngine.revealNextCard(gameState);

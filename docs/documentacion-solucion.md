@@ -9,12 +9,13 @@ El objetivo es automatizar el juego de carrera de caballos con cartas y demostra
 - operadores
 - restricciones
 
-La mecanica implementada es la version clasica del juego:
+La mecanica implementada usa baraja espanola de 40 cartas:
 
 - los 4 ases representan a los caballos
 - se arma una pista con 7 cartas
 - cada carta revelada hace avanzar al caballo de su mismo palo
 - gana el primer caballo que llega a la casilla 7
+- los palos son bastos, oros, copas y espadas
 
 ## 2. Modelo de datos
 
@@ -42,7 +43,7 @@ Relacion entre entidades:
 
 ## 4. Operadores implementados
 
-- crear un mazo sin ases
+- crear un mazo espanol sin ases
 - barajar el mazo
 - repartir la pista
 - contar palos de la pista

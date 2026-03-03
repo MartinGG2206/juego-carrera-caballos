@@ -1,19 +1,16 @@
 package com.example.horserace.domain;
 
 public enum Rank {
-    ACE("A"),
-    TWO("2"),
-    THREE("3"),
-    FOUR("4"),
-    FIVE("5"),
-    SIX("6"),
-    SEVEN("7"),
-    EIGHT("8"),
-    NINE("9"),
-    TEN("10"),
-    JACK("J"),
-    QUEEN("Q"),
-    KING("K");
+    AS("A"),
+    DOS("2"),
+    TRES("3"),
+    CUATRO("4"),
+    CINCO("5"),
+    SEIS("6"),
+    SIETE("7"),
+    SOTA("10"),
+    CABALLO("11"),
+    REY("12");
 
     private final String label;
 

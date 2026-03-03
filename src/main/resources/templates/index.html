@@ -13,8 +13,8 @@
             <p class="eyebrow">Proyecto Java + Spring Boot</p>
             <h1>Carrera de caballos con cartas</h1>
             <p class="lead">
-                Los cuatro ases son los caballos. La pista tiene 7 cartas y la carrera avanza
-                segun el palo de cada carta revelada.
+                Los cuatro ases de la baraja espanola son los caballos. La pista tiene 7 cartas,
+                se reparte al azar y la carrera avanza segun el palo de cada carta revelada.
             </p>
         </div>
         <div class="actions">
@@ -45,7 +45,7 @@
     <section class="grid">
         <article class="panel">
             <h2>Pista inicial</h2>
-            <p>Restriccion aplicada: si aparecen 5 o mas cartas del mismo palo, la pista se vuelve a repartir.</p>
+            <p>La pista se reparte al azar. Pueden repetirse palos; solo se vuelve a repartir si salen 5 o mas del mismo palo.</p>
             <div class="cards">
                 <div class="card" th:each="card : ${gameState.trackCards}">
                     <span th:text="${card.displayValue}"></span>
