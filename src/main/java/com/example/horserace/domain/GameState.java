@@ -129,6 +129,10 @@ public class GameState {
         return 7;
     }
 
+    public int getHorsePosition(Suit suit) {
+        return horsePositions.getOrDefault(suit, 0);
+    }
+
     public int getRemainingDeckSize() {
         return deck == null ? 0 : deck.size();
     }

@@ -96,12 +96,12 @@
             <div class="lanes" th:each="suit : ${suits}">
                 <div class="lane-header">
                     <strong th:text="${suit.displayName}"></strong>
-                    <span th:text="${gameState.horsePositions[suit] + ' / ' + gameState.trackLength}"></span>
+                    <span th:text="${gameState.getHorsePosition(suit) + ' / ' + gameState.trackLength}"></span>
                 </div>
                 <div class="track">
                     <div class="cell"
                          th:each="step : ${#numbers.sequence(1, gameState.trackLength)}"
-                         th:classappend="${step <= gameState.horsePositions[suit]} ? 'filled' : ''">
+                         th:classappend="${step <= gameState.getHorsePosition(suit)} ? 'filled' : ''">
                     </div>
                 </div>
             </div>
