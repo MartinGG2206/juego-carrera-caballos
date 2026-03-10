@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class RaceGameService {
 
-    private static final int REQUIRED_PLAYERS = 4;
+    private static final int MIN_PLAYERS_TO_PLAY = 2;
     private static final int WIN_MULTIPLIER = 5;
 
     private final GameEngine gameEngine;
@@ -159,7 +159,7 @@ public class RaceGameService {
                 currentBet == null ? null : currentBet.getSuit().getDisplayName(),
                 currentBet == null ? null : currentBet.getAmount());
 
-        boolean groupPlayable = members.size() == REQUIRED_PLAYERS;
+        boolean groupPlayable = members.size() >= MIN_PLAYERS_TO_PLAY;
         boolean allPlayersReady = groupPlayable && bets.size() == members.size();
 
         return new GroupRaceContext(
@@ -209,9 +209,9 @@ public class RaceGameService {
             return;
         }
 
-        if (totalPlayers < REQUIRED_PLAYERS) {
+        if (totalPlayers < MIN_PLAYERS_TO_PLAY) {
             state.setBetPlaced(false);
-            state.setStatusMessage("Esperando que el grupo complete 4 jugadores para habilitar la carrera compartida.");
+            state.setStatusMessage("Esperando al menos 2 jugadores en el grupo para habilitar la carrera compartida.");
             return;
         }
 
@@ -233,8 +233,8 @@ public class RaceGameService {
     }
 
     private void ensurePlayableGroup(AppUser user) {
-        if (user.getGroup().getMembers().size() < REQUIRED_PLAYERS) {
-            throw new BusinessException("Tu grupo necesita 4 jugadores registrados para jugar online.");
+        if (user.getGroup().getMembers().size() < MIN_PLAYERS_TO_PLAY) {
+            throw new BusinessException("Tu grupo necesita al menos 2 jugadores registrados para jugar online.");
         }
     }
 
@@ -249,8 +249,8 @@ public class RaceGameService {
         state.setBetAmount(null);
         state.setBetPlaced(false);
         state.setStatusMessage(
-                user.getGroup().getMembers().size() < REQUIRED_PLAYERS
-                        ? "Esperando que el grupo complete 4 jugadores para habilitar la carrera compartida."
+                user.getGroup().getMembers().size() < MIN_PLAYERS_TO_PLAY
+                        ? "Esperando al menos 2 jugadores en el grupo para habilitar la carrera compartida."
                         : "Nueva carrera compartida creada. Todos los jugadores del grupo deben registrar su apuesta.");
         state.getEventLog().clear();
         state.getEventLog().add("Nueva carrera compartida creada para " + user.getGroup().getName() + ".");

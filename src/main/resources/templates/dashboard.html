@@ -14,7 +14,7 @@
             <h1 th:text="${'Hola, ' + userSummary.fullName}"></h1>
             <p class="lead">
                 Tu cuenta pertenece a <strong th:text="${userSummary.groupName}"></strong>.
-                Ahora la carrera es compartida por todo el grupo: deben ser 4 jugadores apostando sobre la misma pista
+                Ahora la carrera es compartida por todo el grupo: entre 2 y 4 jugadores apuestan sobre la misma pista
                 y cualquier miembro puede revelar cartas cuando todos esten listos.
             </p>
         </div>
@@ -59,7 +59,7 @@
     <section class="grid">
         <article class="panel">
             <h2>Grupo y apuestas</h2>
-            <p>Para jugar online, el grupo debe tener 4 jugadores. Cada jugador apuesta una vez por carrera.</p>
+            <p>Para jugar online, el grupo necesita al menos 2 jugadores y puede tener hasta 4. Cada jugador apuesta una vez por carrera.</p>
             <ul class="data-list">
                 <li th:each="bet : ${raceContext.groupBets}">
                     <span th:text="${bet.fullName + ' (@' + bet.username + ')'}"></span>
@@ -83,7 +83,7 @@
         <article class="panel">
             <h2>Tu apuesta en la carrera grupal</h2>
             <p th:if="${!raceContext.groupPlayable}" class="inline-note">
-                Tu grupo necesita 4 jugadores para habilitar la carrera compartida.
+                Tu grupo necesita al menos 2 jugadores para habilitar la carrera compartida.
             </p>
             <form method="post" th:action="@{/game/bet}" th:object="${betForm}" class="stack-form">
                 <label for="suit">Caballo</label>
