@@ -12,6 +12,10 @@ public class Deck {
         this.cards = cards;
     }
 
+    public static Deck fromCards(List<Card> cards) {
+        return new Deck(new ArrayList<>(cards));
+    }
+
     public static Deck createRaceDeck() {
         List<Card> cards = new ArrayList<>();
         for (Suit suit : Suit.values()) {
@@ -34,5 +38,9 @@ public class Deck {
 
     public int size() {
         return cards.size();
+    }
+
+    public List<Card> getCards() {
+        return List.copyOf(cards);
     }
 }

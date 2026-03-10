@@ -1,6 +1,6 @@
 # Horse Race Game
 
-Aplicacion web en Java con Spring Boot y Thymeleaf que automatiza el juego de carrera de caballos con cartas.
+Aplicacion web en Java con Spring Boot, Thymeleaf, Spring Security y JPA que automatiza el juego de carrera de caballos con cartas con persistencia de usuarios, grupos, puntos y partidas.
 
 ## Estructura del proyecto
 
@@ -29,6 +29,25 @@ horse-race-game/
 - Java 17
 - Maven 3.9+ o el wrapper `mvnw`
 
+## Funcionalidades implementadas
+
+- Registro e inicio de sesion.
+- Asignacion automatica de usuarios a un maximo de 4 grupos de 4 jugadores.
+- Saldo inicial de 1000 puntos por usuario.
+- Apuesta variable en puntos.
+- Pago fijo de 5x sobre la apuesta cuando el usuario gana.
+- Compra ilimitada de paquetes de 1000 puntos por 10.000 COP.
+- Persistencia de usuarios, compras y partidas en H2 local.
+
+## Estructura de datos
+
+La aplicacion persiste estas entidades principales:
+
+- `app_user`: credenciales, nombre, saldo en puntos y grupo asignado.
+- `player_group`: grupos del 1 al 4 con capacidad maxima de 4 usuarios.
+- `race_game`: estado serializado de cada carrera por usuario.
+- `point_purchase`: historial de compras de paquetes de puntos.
+
 ## Ejecucion local
 
 ```bash
@@ -42,6 +61,15 @@ En Windows PowerShell:
 ```
 
 Luego abre `http://localhost:8080`.
+
+## Base de datos local
+
+- Motor: H2 en archivo local.
+- Ruta: `./data/horse-race-db`.
+- Consola H2: `http://localhost:8080/h2-console`
+- JDBC URL: `jdbc:h2:file:./data/horse-race-db;AUTO_SERVER=TRUE`
+- Usuario: `sa`
+- Password: vacio
 
 ## Pruebas
 

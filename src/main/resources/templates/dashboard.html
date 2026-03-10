@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel | Horse Race Game</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="layout">
+    <section class="hero dashboard-hero">
+        <div>
+            <p class="eyebrow">Panel del jugador</p>
+            <h1 th:text="${'Hola, ' + userSummary.fullName}"></h1>
+            <p class="lead">
+                Tu cuenta pertenece a <strong th:text="${userSummary.groupName}"></strong>.
+                Cada victoria acredita 5x la apuesta y puedes comprar paquetes de 1000 puntos por 10.000 COP.
+            </p>
+        </div>
+        <div class="actions actions-column">
+            <form method="post" th:action="@{/game/new}">
+                <button type="submit" class="secondary">Nueva carrera</button>
+            </form>
+            <form method="post" th:action="@{/game/draw}">
+                <button type="submit" th:disabled="${!gameState.betPlaced or gameState.finished}">Revelar carta</button>
+            </form>
+            <form method="post" th:action="@{/logout}">
+                <button type="submit" class="ghost">Cerrar sesion</button>
+            </form>
+        </div>
+    </section>
+
+    <p class="message success" th:if="${successMessage}" th:text="${successMessage}"></p>
+    <p class="message error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+
+    <section class="stats-grid">
+        <article class="panel stat-card">
+            <span class="label">Saldo actual</span>
+            <strong th:text="${userSummary.pointsBalance + ' puntos'}"></strong>
+        </article>
+        <article class="panel stat-card">
+            <span class="label">Grupo asignado</span>
+            <strong th:text="${userSummary.groupName}"></strong>
+        </article>
+        <article class="panel stat-card">
+            <span class="label">Cupos ocupados</span>
+            <strong th:text="${userSummary.groupMembersCount + ' / 4'}"></strong>
+        </article>
+        <article class="panel stat-card">
+            <span class="label">Estado de carrera</span>
+            <strong th:text="${gameState.statusMessage}"></strong>
+        </article>
+    </section>
+
+    <section class="grid">
+        <article class="panel">
+            <h2>Tu grupo</h2>
+            <p>La plataforma acepta maximo 4 grupos de 4 jugadores. Este es tu grupo actual.</p>
+            <ul class="data-list">
+                <li th:each="member : ${groupMembers}">
+                    <span th:text="${member.fullName + ' (@' + member.username + ')'}"></span>
+                    <strong th:text="${member.pointsBalance + ' pts'}"></strong>
+                </li>
+            </ul>
+        </article>
+
+        <article class="panel">
+            <h2>Comprar puntos</h2>
+            <p>Precio fijo: 10.000 COP por cada paquete de 1000 puntos. Sin limite de compra.</p>
+            <form method="post" th:action="@{/wallet/purchase}" th:object="${purchaseForm}" class="stack-form">
+                <label for="packageCount">Cantidad de paquetes</label>
+                <input id="packageCount" type="number" min="1" th:field="*{packageCount}">
+                <button type="submit">Comprar puntos</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="grid">
+        <article class="panel">
+            <h2>Registrar apuesta</h2>
+            <form method="post" th:action="@{/game/bet}" th:object="${betForm}" class="stack-form">
+                <label for="suit">Caballo</label>
+                <select id="suit" th:field="*{suit}" th:disabled="${gameState.betPlaced}">
+                    <option value="">Selecciona un caballo</option>
+                    <option th:each="suit : ${suits}" th:value="${suit}" th:text="${suit.displayName}"></option>
+                </select>
+
+                <label for="amount">Puntos a apostar</label>
+                <input id="amount" type="number" min="1" th:field="*{amount}" th:disabled="${gameState.betPlaced}">
+
+                <button type="submit" th:disabled="${gameState.betPlaced}">Confirmar apuesta</button>
+            </form>
+            <p class="inline-note">
+                Apuesta actual:
+                <strong th:text="${gameState.betPlaced ? (gameState.betAmount + ' puntos por ' + gameState.selectedHorseName) : 'pendiente'}"></strong>
+            </p>
+        </article>
+
+        <article class="panel">
+            <h2>Regla de pago</h2>
+            <div class="rule-card">
+                <strong>Pago fijo 5x</strong>
+                <p>Si aciertas el caballo ganador, la plataforma acredita 5 veces los puntos apostados.</p>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Caballo</th>
+                    <th>Cartas en pista</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="track : ${trackSummary}">
+                    <td th:text="${track.suitName + ' (' + track.suitCode + ')'}"></td>
+                    <td th:text="${track.trackCount}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </article>
+    </section>
+
+    <section class="grid">
+        <article class="panel">
+            <h2>Pista inicial</h2>
+            <div class="cards">
+                <div class="card" th:each="card : ${trackCards}">
+                    <span th:text="${card.displayValue}"></span>
+                </div>
+            </div>
+        </article>
+
+        <article class="panel">
+            <h2>Tablero de carrera</h2>
+            <div class="lanes" th:each="suit : ${suits}">
+                <div class="lane-header">
+                    <strong th:text="${suit.displayName}"></strong>
+                    <span th:text="${gameState.getHorsePosition(suit) + ' / ' + gameState.trackLength}"></span>
+                </div>
+                <div class="track">
+                    <div class="cell"
+                         th:each="step : ${#numbers.sequence(1, gameState.trackLength)}"
+                         th:classappend="${step <= gameState.getHorsePosition(suit)} ? 'filled' : ''">
+                    </div>
+                </div>
+            </div>
+            <p class="winner" th:if="${gameState.finished}" th:text="${'Ganador: ' + gameState.winner.displayName}"></p>
+        </article>
+    </section>
+
+    <section class="grid">
+        <article class="panel">
+            <h2>Compras recientes</h2>
+            <ul class="data-list compact" th:if="${!recentPurchases.isEmpty()}">
+                <li th:each="purchase : ${recentPurchases}">
+                    <span th:text="${purchase.purchasedAt}"></span>
+                    <strong th:text="${'+' + purchase.pointsAdded + ' pts / $' + purchase.amountPaidCop + ' COP'}"></strong>
+                </li>
+            </ul>
+            <p th:if="${recentPurchases.isEmpty()}">Todavia no has comprado paquetes.</p>
+        </article>
+
+        <article class="panel">
+            <h2>Ultimas carreras</h2>
+            <ul class="data-list compact" th:if="${!recentGames.isEmpty()}">
+                <li th:each="game : ${recentGames}">
+                    <span th:text="${#temporals.format(game.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    <strong th:text="${game.finished ? ('Ganador: ' + game.winner.displayName) : 'En curso'}"></strong>
+                </li>
+            </ul>
+            <p th:if="${recentGames.isEmpty()}">No hay historial de carreras todavia.</p>
+        </article>
+    </section>
+
+    <section class="panel">
+        <h2>Bitacora de eventos</h2>
+        <ul class="log">
+            <li th:each="event : ${gameState.eventLog}" th:text="${event}"></li>
+        </ul>
+    </section>
+</main>
+</body>
+</html>

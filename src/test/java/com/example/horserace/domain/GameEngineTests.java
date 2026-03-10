@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 class GameEngineTests {
@@ -25,8 +27,25 @@ class GameEngineTests {
         gameEngine.placeBet(gameState, Suit.COPAS, 10);
 
         assertTrue(gameState.isBetPlaced());
-        assertEquals(90, gameState.getPlayerBalance());
+        assertEquals(990, gameState.getPlayerBalance());
         assertEquals(Suit.COPAS, gameState.getSelectedHorse());
+    }
+
+    @Test
+    void shouldPayFiveTimesTheBetWhenPlayerWins() {
+        GameState gameState = new GameState();
+        gameState.setDeck(Deck.fromCards(List.of(new Card(Suit.BASTOS, Rank.DOS))));
+        gameState.setPlayerBalance(900);
+        gameState.setSelectedHorse(Suit.BASTOS);
+        gameState.setBetAmount(100);
+        gameState.setBetPlaced(true);
+        gameState.getHorsePositions().put(Suit.BASTOS, 6);
+
+        gameEngine.revealNextCard(gameState);
+
+        assertTrue(gameState.isFinished());
+        assertEquals(Suit.BASTOS, gameState.getWinner());
+        assertEquals(1400, gameState.getPlayerBalance());
     }
 
     @Test

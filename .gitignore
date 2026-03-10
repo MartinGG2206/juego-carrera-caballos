@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+data/
+spring-run*.log
+spring-run*.pid

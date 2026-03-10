@@ -13,7 +13,7 @@ public class GameState {
     private Deck deck;
     private Suit selectedHorse;
     private Integer betAmount;
-    private int playerBalance = 100;
+    private int playerBalance = 1000;
     private boolean betPlaced;
     private boolean finished;
     private Suit winner;

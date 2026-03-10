@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | Horse Race Game</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body class="auth-body">
+<main class="auth-shell">
+    <section class="auth-copy">
+        <p class="eyebrow">Crear cuenta</p>
+        <h1>Acceso restringido a 4 grupos de 4 jugadores</h1>
+        <p class="lead">
+            Cada usuario nuevo recibe 1000 puntos y queda asignado al primer grupo con cupo disponible.
+            Si los 16 cupos se completan, el registro se bloquea.
+        </p>
+    </section>
+
+    <section class="auth-card">
+        <h2>Registro</h2>
+        <p class="message error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+
+        <form method="post" th:action="@{/register}" th:object="${registrationForm}" class="stack-form">
+            <label for="fullName">Nombre completo</label>
+            <input id="fullName" type="text" th:field="*{fullName}" required>
+            <small class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+
+            <label for="username">Usuario</label>
+            <input id="username" type="text" th:field="*{username}" required>
+            <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+
+            <label for="password">Contrasena</label>
+            <input id="password" type="password" th:field="*{password}" required>
+            <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+
+            <label for="confirmPassword">Confirmar contrasena</label>
+            <input id="confirmPassword" type="password" th:field="*{confirmPassword}" required>
+            <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+
+            <button type="submit">Crear cuenta</button>
+        </form>
+
+        <p class="inline-note">
+            Ya tienes cuenta? <a th:href="@{/login}">Inicia sesion</a>
+        </p>
+    </section>
+</main>
+</body>
+</html>

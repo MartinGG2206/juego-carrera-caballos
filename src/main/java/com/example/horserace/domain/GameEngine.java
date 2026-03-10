@@ -11,12 +11,19 @@ import org.springframework.stereotype.Service;
 public class GameEngine {
 
     private static final int TRACK_LENGTH = 7;
+    private static final int INITIAL_POINTS = 1000;
+    private static final int WIN_MULTIPLIER = 5;
 
     public GameState createNewGame() {
+        return createNewGame(INITIAL_POINTS);
+    }
+
+    public GameState createNewGame(int playerBalance) {
         GameState gameState = new GameState();
         setupRace(gameState);
-        gameState.setStatusMessage("Se preparo una nueva carrera. Revisa la pista y registra una apuesta.");
-        gameState.getEventLog().add("Nueva partida creada con saldo inicial de 100 creditos.");
+        gameState.setPlayerBalance(playerBalance);
+        gameState.setStatusMessage("Se preparo una nueva carrera. Registra tu apuesta en puntos para comenzar.");
+        gameState.getEventLog().add("Nueva partida creada con saldo disponible de " + playerBalance + " puntos.");
         return gameState;
     }
 
@@ -40,8 +47,8 @@ public class GameEngine {
         gameState.setPlayerBalance(gameState.getPlayerBalance() - amount);
         gameState.setStatusMessage("Apuesta registrada. Puedes revelar cartas para iniciar la carrera.");
         gameState.getEventLog().add(
-                "Apuesta: " + amount + " creditos por " + suit.getDisplayName() + " con cuota "
-                        + gameState.getOddsBySuit().get(suit) + ":1.");
+                "Apuesta registrada: " + amount + " puntos por " + suit.getDisplayName()
+                        + ". Si gana, el pago es " + WIN_MULTIPLIER + "x.");
     }
 
     public void revealNextCard(GameState gameState) {
@@ -115,10 +122,10 @@ public class GameEngine {
         gameState.setWinner(winner);
 
         if (winner == gameState.getSelectedHorse()) {
-            int payout = gameState.getBetAmount() * (gameState.getOddsBySuit().get(winner) + 1);
+            int payout = gameState.getBetAmount() * WIN_MULTIPLIER;
             gameState.setPlayerBalance(gameState.getPlayerBalance() + payout);
-            gameState.setStatusMessage("Gano " + winner.getDisplayName() + ". Cobras " + payout + " creditos.");
-            gameState.getEventLog().add("Resultado: ganaste la apuesta. Pago total recibido: " + payout + " creditos.");
+            gameState.setStatusMessage("Gano " + winner.getDisplayName() + ". Cobras " + payout + " puntos.");
+            gameState.getEventLog().add("Resultado: apuesta ganadora. Pago acreditado: " + payout + " puntos.");
             return;
         }
 
