@@ -14,15 +14,19 @@
             <h1 th:text="${'Hola, ' + userSummary.fullName}"></h1>
             <p class="lead">
                 Tu cuenta pertenece a <strong th:text="${userSummary.groupName}"></strong>.
-                Cada victoria acredita 5x la apuesta y puedes comprar paquetes de 1000 puntos por 10.000 COP.
+                Ahora la carrera es compartida por todo el grupo: entre 2 y 4 jugadores apuestan sobre la misma pista
+                y cualquier miembro puede revelar cartas cuando todos esten listos.
             </p>
         </div>
         <div class="actions actions-column">
             <form method="post" th:action="@{/game/new}">
-                <button type="submit" class="secondary">Nueva carrera</button>
+                <button type="submit" class="secondary">Nueva carrera grupal</button>
             </form>
             <form method="post" th:action="@{/game/draw}">
-                <button type="submit" th:disabled="${!gameState.betPlaced or gameState.finished}">Revelar carta</button>
+                <button type="submit" th:disabled="${!raceContext.canDraw}">Revelar carta</button>
+            </form>
+            <form method="get" th:action="@{/dashboard}">
+                <button type="submit" class="ghost">Actualizar estado</button>
             </form>
             <form method="post" th:action="@{/logout}">
                 <button type="submit" class="ghost">Cerrar sesion</button>
@@ -43,8 +47,8 @@
             <strong th:text="${userSummary.groupName}"></strong>
         </article>
         <article class="panel stat-card">
-            <span class="label">Cupos ocupados</span>
-            <strong th:text="${userSummary.groupMembersCount + ' / 4'}"></strong>
+            <span class="label">Jugadores listos</span>
+            <strong th:text="${raceContext.readyPlayers + ' / ' + raceContext.totalPlayers}"></strong>
         </article>
         <article class="panel stat-card">
             <span class="label">Estado de carrera</span>
@@ -54,12 +58,12 @@
 
     <section class="grid">
         <article class="panel">
-            <h2>Tu grupo</h2>
-            <p>La plataforma acepta maximo 4 grupos de 4 jugadores. Este es tu grupo actual.</p>
+            <h2>Grupo y apuestas</h2>
+            <p>Para jugar online, el grupo necesita al menos 2 jugadores y puede tener hasta 4. Cada jugador apuesta una vez por carrera.</p>
             <ul class="data-list">
-                <li th:each="member : ${groupMembers}">
-                    <span th:text="${member.fullName + ' (@' + member.username + ')'}"></span>
-                    <strong th:text="${member.pointsBalance + ' pts'}"></strong>
+                <li th:each="bet : ${raceContext.groupBets}">
+                    <span th:text="${bet.fullName + ' (@' + bet.username + ')'}"></span>
+                    <strong th:text="${bet.ready ? (bet.amount + ' pts por ' + bet.suitName) : 'Esperando apuesta'}"></strong>
                 </li>
             </ul>
         </article>
@@ -77,30 +81,33 @@
 
     <section class="grid">
         <article class="panel">
-            <h2>Registrar apuesta</h2>
+            <h2>Tu apuesta en la carrera grupal</h2>
+            <p th:if="${!raceContext.groupPlayable}" class="inline-note">
+                Tu grupo necesita al menos 2 jugadores para habilitar la carrera compartida.
+            </p>
             <form method="post" th:action="@{/game/bet}" th:object="${betForm}" class="stack-form">
                 <label for="suit">Caballo</label>
-                <select id="suit" th:field="*{suit}" th:disabled="${gameState.betPlaced}">
+                <select id="suit" th:field="*{suit}" th:disabled="${!raceContext.canPlaceBet}">
                     <option value="">Selecciona un caballo</option>
                     <option th:each="suit : ${suits}" th:value="${suit}" th:text="${suit.displayName}"></option>
                 </select>
 
                 <label for="amount">Puntos a apostar</label>
-                <input id="amount" type="number" min="1" th:field="*{amount}" th:disabled="${gameState.betPlaced}">
+                <input id="amount" type="number" min="1" th:field="*{amount}" th:disabled="${!raceContext.canPlaceBet}">
 
-                <button type="submit" th:disabled="${gameState.betPlaced}">Confirmar apuesta</button>
+                <button type="submit" th:disabled="${!raceContext.canPlaceBet}">Confirmar apuesta</button>
             </form>
             <p class="inline-note">
-                Apuesta actual:
-                <strong th:text="${gameState.betPlaced ? (gameState.betAmount + ' puntos por ' + gameState.selectedHorseName) : 'pendiente'}"></strong>
+                Tu estado:
+                <strong th:text="${raceContext.currentBet.ready ? (raceContext.currentBet.amount + ' puntos por ' + raceContext.currentBet.suitName) : 'aun no has apostado'}"></strong>
             </p>
         </article>
 
         <article class="panel">
             <h2>Regla de pago</h2>
             <div class="rule-card">
-                <strong>Pago fijo 5x</strong>
-                <p>Si aciertas el caballo ganador, la plataforma acredita 5 veces los puntos apostados.</p>
+                <strong>Pago fijo 5x por jugador</strong>
+                <p>Si el caballo que elegiste gana, recibes 5 veces tus puntos apostados, aunque tus companeros hayan apostado distinto.</p>
             </div>
             <table>
                 <thead>
@@ -121,7 +128,7 @@
 
     <section class="grid">
         <article class="panel">
-            <h2>Pista inicial</h2>
+            <h2>Pista compartida</h2>
             <div class="cards">
                 <div class="card" th:each="card : ${trackCards}">
                     <span th:text="${card.displayValue}"></span>
@@ -130,7 +137,7 @@
         </article>
 
         <article class="panel">
-            <h2>Tablero de carrera</h2>
+            <h2>Tablero de carrera del grupo</h2>
             <div class="lanes" th:each="suit : ${suits}">
                 <div class="lane-header">
                     <strong th:text="${suit.displayName}"></strong>
@@ -144,6 +151,9 @@
                 </div>
             </div>
             <p class="winner" th:if="${gameState.finished}" th:text="${'Ganador: ' + gameState.winner.displayName}"></p>
+            <p class="inline-note" th:if="${raceContext.autoRefreshEnabled}">
+                Estado compartido: esta vista se actualiza automaticamente cada 10 segundos mientras la carrera este activa.
+            </p>
         </article>
     </section>
 
@@ -160,7 +170,7 @@
         </article>
 
         <article class="panel">
-            <h2>Ultimas carreras</h2>
+            <h2>Ultimas carreras del grupo</h2>
             <ul class="data-list compact" th:if="${!recentGames.isEmpty()}">
                 <li th:each="game : ${recentGames}">
                     <span th:text="${#temporals.format(game.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
@@ -172,11 +182,17 @@
     </section>
 
     <section class="panel">
-        <h2>Bitacora de eventos</h2>
+        <h2>Bitacora de eventos compartida</h2>
         <ul class="log">
             <li th:each="event : ${gameState.eventLog}" th:text="${event}"></li>
         </ul>
     </section>
 </main>
+
+<script th:if="${raceContext.autoRefreshEnabled}">
+    setTimeout(function () {
+        window.location.reload();
+    }, 10000);
+</script>
 </body>
 </html>

@@ -34,3 +34,7 @@ build/
 data/
 spring-run*.log
 spring-run*.pid
+jar-run*.log
+jar-run*.pid
+group-run*.log
+group-run*.pid

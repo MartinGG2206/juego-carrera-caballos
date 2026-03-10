@@ -1,6 +1,7 @@
 package com.example.horserace.persistence.repository;
 
 import com.example.horserace.persistence.model.AppUser;
+import com.example.horserace.persistence.model.PlayerGroup;
 import com.example.horserace.persistence.model.RaceGame;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,8 @@ public interface RaceGameRepository extends JpaRepository<RaceGame, Long> {
     Optional<RaceGame> findTopByPlayerOrderByIdDesc(AppUser player);
 
     List<RaceGame> findTop5ByPlayerOrderByIdDesc(AppUser player);
+
+    Optional<RaceGame> findTopByGroupOrderByIdDesc(PlayerGroup group);
+
+    List<RaceGame> findTop5ByGroupOrderByIdDesc(PlayerGroup group);
 }

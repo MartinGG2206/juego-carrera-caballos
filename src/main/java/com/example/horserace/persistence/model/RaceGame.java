@@ -30,6 +30,10 @@ public class RaceGame {
     @JoinColumn(name = "player_id", nullable = false)
     private AppUser player;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private PlayerGroup group;
+
     @Lob
     @Column(nullable = false)
     private String trackCardsJson;
@@ -58,6 +62,8 @@ public class RaceGame {
     @Enumerated(EnumType.STRING)
     private Suit winner;
 
+    private Boolean payoutsApplied = false;
+
     @Column(nullable = false, length = 300)
     private String statusMessage;
 
@@ -80,6 +86,14 @@ public class RaceGame {
 
     public void setPlayer(AppUser player) {
         this.player = player;
+    }
+
+    public PlayerGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(PlayerGroup group) {
+        this.group = group;
     }
 
     public String getTrackCardsJson() {
@@ -152,6 +166,14 @@ public class RaceGame {
 
     public void setWinner(Suit winner) {
         this.winner = winner;
+    }
+
+    public Boolean getPayoutsApplied() {
+        return payoutsApplied;
+    }
+
+    public void setPayoutsApplied(Boolean payoutsApplied) {
+        this.payoutsApplied = payoutsApplied;
     }
 
     public String getStatusMessage() {

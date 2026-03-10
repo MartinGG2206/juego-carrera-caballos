@@ -7,6 +7,7 @@ import com.example.horserace.service.BusinessException;
 import com.example.horserace.service.CurrentUserService;
 import com.example.horserace.service.DashboardService;
 import com.example.horserace.service.RaceGameService;
+import com.example.horserace.service.RaceGameService.GroupRaceContext;
 import com.example.horserace.service.WalletService;
 import com.example.horserace.web.form.BetForm;
 import com.example.horserace.web.form.PurchaseForm;
@@ -18,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -47,7 +47,8 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
         AppUser user = currentUserService.requireUser(authentication);
-        GameState gameState = raceGameService.getOrCreateCurrentGame(user);
+        GroupRaceContext raceContext = raceGameService.getGroupRaceContext(user);
+        GameState gameState = raceContext.gameState();
 
         if (!model.containsAttribute("betForm")) {
             model.addAttribute("betForm", new BetForm());
@@ -58,6 +59,7 @@ public class DashboardController {
 
         model.addAttribute("userSummary", dashboardService.toUserSummary(user));
         model.addAttribute("groupMembers", dashboardService.toGroupMembers(user));
+        model.addAttribute("raceContext", raceContext);
         model.addAttribute("gameState", gameState);
         model.addAttribute("trackSummary", dashboardService.buildTrackSummary(gameState));
         model.addAttribute("trackCards", dashboardService.toCardViews(gameState.getTrackCards()));
@@ -69,8 +71,12 @@ public class DashboardController {
     @PostMapping("/game/new")
     public String newGame(Authentication authentication, RedirectAttributes redirectAttributes) {
         AppUser user = currentUserService.requireUser(authentication);
-        raceGameService.startNewGame(user);
-        redirectAttributes.addFlashAttribute("successMessage", "Se creo una nueva carrera para tu cuenta.");
+        try {
+            raceGameService.startNewGame(user);
+            redirectAttributes.addFlashAttribute("successMessage", "Se creo una nueva carrera compartida para tu grupo.");
+        } catch (BusinessException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
         return "redirect:/dashboard";
     }
 
