@@ -12,8 +12,8 @@
         <p class="eyebrow">Crear cuenta</p>
         <h1>Acceso restringido a 4 grupos de 4 jugadores</h1>
         <p class="lead">
-            Cada usuario nuevo recibe 1000 puntos y queda asignado al primer grupo con cupo disponible.
-            Si los 16 cupos se completan, el registro se bloquea.
+            Cada usuario nuevo recibe 1000 puntos. Puedes elegir el grupo para entrar con tus amigos,
+            siempre que ese grupo tenga cupo. Si los 16 cupos se completan, el registro se bloquea.
         </p>
     </section>
 
@@ -37,6 +37,16 @@
             <label for="confirmPassword">Confirmar contrasena</label>
             <input id="confirmPassword" type="password" th:field="*{confirmPassword}" required>
             <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+
+            <label for="preferredGroupNumber">Grupo para jugar</label>
+            <select id="preferredGroupNumber" th:field="*{preferredGroupNumber}">
+                <option value="">Asignacion automatica</option>
+                <option th:each="group : ${groupOptions}"
+                        th:value="${group.groupNumber}"
+                        th:text="${group.name + ' (' + group.currentMembers + '/4)'}"
+                        th:disabled="${!group.available}">
+                </option>
+            </select>
 
             <button type="submit">Crear cuenta</button>
         </form>

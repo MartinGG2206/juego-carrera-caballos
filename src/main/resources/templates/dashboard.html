@@ -15,7 +15,7 @@
             <p class="lead">
                 Tu cuenta pertenece a <strong th:text="${userSummary.groupName}"></strong>.
                 Ahora la carrera es compartida por todo el grupo: entre 2 y 4 jugadores apuestan sobre la misma pista
-                y cualquier miembro puede revelar cartas cuando todos esten listos.
+                y cualquier miembro puede revelar cartas cuando todos esten listos. Para jugar con amigos, registren sus cuentas en el mismo grupo.
             </p>
         </div>
         <div class="actions actions-column">
@@ -192,7 +192,7 @@
 <script th:if="${raceContext.autoRefreshEnabled}">
     setTimeout(function () {
         window.location.reload();
-    }, 10000);
+    }, 3000);
 </script>
 </body>
 </html>

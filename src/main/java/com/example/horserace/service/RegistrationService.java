@@ -41,7 +41,7 @@ public class RegistrationService {
             throw new BusinessException("La confirmacion de la contrasena no coincide.");
         }
 
-        PlayerGroup availableGroup = findAvailableGroup();
+        PlayerGroup availableGroup = resolveGroup(form.getPreferredGroupNumber());
 
         AppUser user = new AppUser();
         user.setUsername(normalizedUsername);
@@ -50,6 +50,31 @@ public class RegistrationService {
         user.setPointsBalance(INITIAL_POINTS);
         user.setGroup(availableGroup);
         appUserRepository.save(user);
+    }
+
+    @Transactional
+    public List<GroupOption> availableGroups() {
+        List<PlayerGroup> groups = playerGroupRepository.findAllByOrderByGroupNumberAsc();
+        return groups.stream()
+                .sorted(Comparator.comparingInt(PlayerGroup::getGroupNumber))
+                .map(group -> new GroupOption(
+                        group.getGroupNumber(),
+                        group.getName(),
+                        group.getMembers().size(),
+                        group.getMembers().size() < MAX_USERS_PER_GROUP))
+                .toList();
+    }
+
+    private PlayerGroup resolveGroup(Integer preferredGroupNumber) {
+        if (preferredGroupNumber != null) {
+            PlayerGroup preferredGroup = playerGroupRepository.findByGroupNumber(preferredGroupNumber)
+                    .orElseThrow(() -> new BusinessException("El grupo seleccionado no existe."));
+            if (preferredGroup.getMembers().size() >= MAX_USERS_PER_GROUP) {
+                throw new BusinessException("El grupo seleccionado ya esta lleno. Elige otro grupo.");
+            }
+            return preferredGroup;
+        }
+        return findAvailableGroup();
     }
 
     private PlayerGroup findAvailableGroup() {
@@ -64,5 +89,8 @@ public class RegistrationService {
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(
                         "No hay cupos disponibles. La plataforma admite hasta 4 grupos de 4 usuarios."));
+    }
+
+    public record GroupOption(int groupNumber, String name, int currentMembers, boolean available) {
     }
 }

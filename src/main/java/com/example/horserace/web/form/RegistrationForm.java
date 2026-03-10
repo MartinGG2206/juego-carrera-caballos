@@ -22,6 +22,8 @@ public class RegistrationForm {
     @NotBlank(message = "Debes confirmar la contrasena.")
     private String confirmPassword;
 
+    private Integer preferredGroupNumber;
+
     public String getFullName() {
         return fullName;
     }
@@ -52,5 +54,13 @@ public class RegistrationForm {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public Integer getPreferredGroupNumber() {
+        return preferredGroupNumber;
+    }
+
+    public void setPreferredGroupNumber(Integer preferredGroupNumber) {
+        this.preferredGroupNumber = preferredGroupNumber;
     }
 }

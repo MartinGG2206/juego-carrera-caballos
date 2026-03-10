@@ -33,9 +33,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        if (!model.containsAttribute("registrationForm")) {
-            model.addAttribute("registrationForm", new RegistrationForm());
-        }
+        ensureRegistrationModel(model);
         return "register";
     }
 
@@ -44,6 +42,7 @@ public class AuthController {
                            BindingResult bindingResult,
                            Model model) {
         if (bindingResult.hasErrors()) {
+            ensureRegistrationModel(model);
             return "register";
         }
 
@@ -51,8 +50,16 @@ public class AuthController {
             registrationService.register(form);
             return "redirect:/login?registered";
         } catch (BusinessException ex) {
+            ensureRegistrationModel(model);
             model.addAttribute("errorMessage", ex.getMessage());
             return "register";
         }
+    }
+
+    private void ensureRegistrationModel(Model model) {
+        if (!model.containsAttribute("registrationForm")) {
+            model.addAttribute("registrationForm", new RegistrationForm());
+        }
+        model.addAttribute("groupOptions", registrationService.availableGroups());
     }
 }
